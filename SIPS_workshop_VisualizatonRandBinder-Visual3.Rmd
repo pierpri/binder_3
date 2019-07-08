@@ -1,0 +1,43 @@
+---
+title: "SIPS Workshop - Reproducible Data Visualizations Using R and Binder"
+author: "Pierpaolo Primoceri"
+date: "7/8/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, comment = FALSE, prompt = FALSE, message = FALSE)
+
+# load packages
+library(readr)
+library(tibble)
+library(dplyr)
+library(tidyr)
+library(stringr)
+library(ggplot2)
+```
+
+```{r read-data}
+full_trains <- read_csv("https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2019/2019-02-26/full_trains.csv")
+```
+
+## Visualization Challenge 3
+```{r}
+full_trains %>%
+  filter(str_detect(departure_station, "PARIS")) %>%
+  group_by(departure_station, year, month) %>%
+  summarise(avg_canc = mean(num_of_canceled_trains, na.rm=T)) %>%
+  ggplot(aes(x = departure_station, y = avg_canc)) + 
+  geom_jitter(aes(colour = departure_station), alpha = .5, position = position_jitter(0.05)) +
+  facet_wrap(~year) +
+  labs(title = "Cancelled Trains from Paris Railway Stations by Year",
+       subtitle = "Average Number of Cancellations per Months",
+       x = "",
+       y = "") +
+  guides(colour = FALSE) +
+  coord_flip() + 
+  scale_color_brewer(palette = "Set2")
+```
+
+
+
